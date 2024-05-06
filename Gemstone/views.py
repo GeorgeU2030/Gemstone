@@ -4,14 +4,24 @@ from .serializer import UserSerializer
 from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
 from rest_framework import status
+from django.shortcuts import get_object_or_404
+
 
 @api_view(['GET'])
 def gemstone(request):
     return Response({'message': 'This is the Backend of Gemstone :)!'})
 
+
 @api_view(['POST'])
 def login(request):
-    return Response({'message': 'Hello, world!'})
+    print(request.data)
+    user = get_object_or_404(User, email=request.data['email'])
+    if user.check_password(request.data['password']):
+        token, created = Token.objects.get_or_create(user=user)
+        serializer = UserSerializer(instance=user)
+        return Response({'token': token.key, 'user': serializer.data}, status=status.HTTP_200_OK)
+    return Response({'error': 'Invalid credentials'}, status=status.HTTP_400_BAD_REQUEST)
+
 
 @api_view(['POST'])
 def signup(request):

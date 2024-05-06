@@ -23,5 +23,4 @@ urlpatterns = [
     path("", views.gemstone),
     re_path("login", views.login),
     re_path("signup", views.signup),
-
 ]
