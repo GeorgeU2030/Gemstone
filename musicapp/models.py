@@ -1,7 +1,15 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 
 # Create your models here.
+
+
+class Profile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.user.username}"
 
 
 class Award(models.Model):
@@ -30,6 +38,7 @@ class Musician(models.Model):
     points_year = models.IntegerField()
     points_semester = models.IntegerField()
     awards = models.ManyToManyField(Award, related_name="musicians", blank=True)
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
 
     def __str__(self):
         return f"{self.name} - {self.country}"
@@ -46,6 +55,7 @@ class Song(models.Model):
     album = models.TextField()
     youtube = models.TextField()
     musicians = models.ManyToManyField(Musician, related_name="songs")
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE)
 
     def __str__(self):
         return f"{self.name}"
