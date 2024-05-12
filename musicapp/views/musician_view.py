@@ -54,3 +54,5 @@ def ranking(request):
     musicians = Musician.objects.filter(profile=request.user).order_by('current_position')
     serializer = MusicianSerializer(musicians, many=True)
     return Response(serializer.data)
+
+

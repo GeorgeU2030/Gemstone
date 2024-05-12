@@ -2,6 +2,9 @@ from rest_framework import viewsets, status
 from musicapp.serializers import SongSerializer
 from musicapp.models import Song, Musician
 from rest_framework.response import Response
+from rest_framework.decorators import api_view, permission_classes, authentication_classes
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.authentication import TokenAuthentication
 
 
 class SongView(viewsets.ModelViewSet):
@@ -45,3 +48,16 @@ class SongView(viewsets.ModelViewSet):
 
         serializer = self.get_serializer(song)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+
+@api_view(['GET'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def latest_song(request):
+    song = Song.objects.filter(profile=request.user).order_by('-id').first()
+
+    if song:
+        serializer = SongSerializer(song)
+        return Response(serializer.data)
+    else:
+        return Response({'error': 'No songs found'}, status=status.HTTP_404_NOT_FOUND)
