@@ -9,4 +9,8 @@ router.register(r"musicians", musician_view.MusicianView, 'musicians')
 
 urlpatterns = [
     path("api/v1/", include(router.urls)),
+    path("get-id-user/", musician_view.get_id_user, name="get-id-user"),
+    path("top-musicians-points/", musician_view.top_musicians_points, name="top-musicians-points"),
+    path("top-musicians-awards/", musician_view.top_musicians_awards, name="top-musicians-awards"),
+    path("ranking/", musician_view.ranking, name="ranking")
 ]

@@ -23,7 +23,7 @@ class RankingSerializer(serializers.ModelSerializer):
 class MusicianCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Musician
-        fields = ('name', 'photo', 'flag', 'country')
+        fields = ('name', 'photo', 'flag', 'country', 'profile')
 
 
 class MusicianAwardSerializer(serializers.ModelSerializer):

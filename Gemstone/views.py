@@ -14,12 +14,10 @@ def gemstone(request):
 
 @api_view(['POST'])
 def login(request):
-    print(request.data)
     user = get_object_or_404(User, email=request.data['email'])
     if user.check_password(request.data['password']):
         token, created = Token.objects.get_or_create(user=user)
-        serializer = UserSerializer(instance=user)
-        return Response({'token': token.key, 'user': serializer.data}, status=status.HTTP_200_OK)
+        return Response({'token': token.key}, status=status.HTTP_200_OK)
     return Response({'error': 'Invalid credentials'}, status=status.HTTP_400_BAD_REQUEST)
 
 
@@ -34,7 +32,7 @@ def signup(request):
         user.save()
 
         token = Token.objects.create(user=user)
-        return Response({'token': token.key, 'user': serializer.data}, status=status.HTTP_201_CREATED)
+        return Response({'token': token.key}, status=status.HTTP_201_CREATED)
 
     if 'email' in serializer.errors:
         error_msg = {"error": "Email already exists."}
