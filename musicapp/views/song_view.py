@@ -61,3 +61,12 @@ def latest_song(request):
         return Response(serializer.data)
     else:
         return Response({'error': 'No songs found'}, status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['GET'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def get_all_songs(request):
+    songs = Song.objects.filter(profile=request.user).order_by('-week')
+    serializer = SongSerializer(songs, many=True)
+    return Response(serializer.data)
