@@ -5,7 +5,7 @@ from rest_framework.decorators import api_view, permission_classes, authenticati
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication
-from django.db.models import Count
+from django.db.models import Count, Q
 
 
 class MusicianView(viewsets.ModelViewSet):
@@ -56,3 +56,15 @@ def ranking(request):
     return Response(serializer.data)
 
 
+@api_view(['GET'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def search_musician(request):
+    search = request.query_params.get('search')
+
+    if search == '':
+        return Response([])
+
+    musicians = Musician.objects.filter(profile=request.user).filter(Q(name__istartswith=search))
+    serializer = MusicianSerializer(musicians, many=True)
+    return Response(serializer.data)

@@ -15,4 +15,5 @@ urlpatterns = [
     path("ranking/", musician_view.ranking, name="ranking"),
     path("latest-song/", song_view.latest_song, name="latest-song"),
     path("all_songs", song_view.get_all_songs, name="all_songs"),
+    path("search_musician/", musician_view.search_musician, name="search_musician"),
 ]
