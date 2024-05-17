@@ -59,6 +59,17 @@ def ranking(request):
 @api_view(['GET'])
 @authentication_classes([TokenAuthentication])
 @permission_classes([IsAuthenticated])
+def ranking_awards(request):
+    musicians = (Musician.objects.filter(profile=request.user)
+                 .annotate(award_count=Count('awards'))
+                 .order_by('-award_count', 'current_position'))
+    serializer = MusicianSerializer(musicians, many=True)
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
 def search_musician(request):
     search = request.query_params.get('search')
 
@@ -67,4 +78,13 @@ def search_musician(request):
 
     musicians = Musician.objects.filter(profile=request.user).filter(Q(name__istartswith=search))
     serializer = MusicianSerializer(musicians, many=True)
+    return Response(serializer.data)
+
+
+@api_view(['GET'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def get_musician(request, musician_id):
+    musician = Musician.objects.filter(profile=request.user).get(id=musician_id)
+    serializer = MusicianSerializer(musician)
     return Response(serializer.data)
