@@ -19,7 +19,8 @@ class Award(models.Model):
     # 2 - Month
     # 3 - Semester
     # 4 - Year
-    type_award = models.IntegerField()
+    type_award = models.IntegerField(default=0)
+    points = models.IntegerField(default=0)
 
     def __str__(self):
         return f"{self.description}"

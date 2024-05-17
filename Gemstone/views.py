@@ -6,7 +6,6 @@ from rest_framework.authtoken.models import Token
 from rest_framework import status
 from django.shortcuts import get_object_or_404
 
-
 @api_view(['GET'])
 def gemstone(request):
     return Response({'message': 'This is the Backend of Gemstone :)!'})

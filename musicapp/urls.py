@@ -16,4 +16,7 @@ urlpatterns = [
     path("latest-song/", song_view.latest_song, name="latest-song"),
     path("all_songs", song_view.get_all_songs, name="all_songs"),
     path("search_musician/", musician_view.search_musician, name="search_musician"),
+    path("last_week/", song_view.last_week, name="last_week"),
+    path("update_musicians/", song_view.update_musicians, name="update_musicians"),
+    path("song/<int:song_id>",song_view.get_song_by_id, name="song")
 ]
