@@ -1,6 +1,6 @@
 from rest_framework import viewsets
 from musicapp.serializers import MusicianSerializer, MusicianCreateSerializer, MusicianAwardSerializer
-from musicapp.models import Musician
+from musicapp.models import Award, Musician
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
@@ -88,3 +88,128 @@ def get_musician(request, musician_id):
     musician = Musician.objects.filter(profile=request.user).get(id=musician_id)
     serializer = MusicianSerializer(musician)
     return Response(serializer.data)
+
+
+@api_view(['GET'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def all_musicians(request):
+    musicians = Musician.objects.filter(profile=request.user)
+    serializer = MusicianSerializer(musicians, many=True)
+    return Response(serializer.data)
+
+
+@api_view(['POST'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def add_points_week(request):
+    musician_ids = request.data.get('musicianIds')
+    points_to_add = request.data.get('pointsToAdd')
+
+    if musician_ids and points_to_add:
+        
+        musicians = Musician.objects.filter(profile=request.user).filter(id__in=musician_ids)
+        for musician in musicians:
+            musician.points += points_to_add
+            musician.points_semester += points_to_add
+            musician.points_year += points_to_add
+            musician.save()
+
+
+    musicians = Musician.objects.filter(profile=request.user)
+
+    musicians_sorted = sorted(musicians, key=lambda musician: musician.points, reverse=True)
+
+    for position, musician in enumerate(musicians_sorted, start=1):
+        musician.current_position = position
+        musician.save()
+
+        if musician.best_position == 0 or musician.current_position < musician.best_position:
+            musician.best_position = musician.current_position
+            musician.save()
+
+    return Response({"message": "Points added correctly."})
+
+
+@api_view(['POST'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def add_points_trophy(request):
+    musician_ids = request.data.get("musicianIds")
+    points_to_add = request.data.get("pointsToAdd")
+    classification = request.data.get("classification")
+
+    if points_to_add == 100:
+        typeAward = 3;
+    elif points_to_add == 200:
+        typeAward = 4;
+
+    if musician_ids and points_to_add:
+        
+        musicians = Musician.objects.filter(profile=request.user).filter(id__in=musician_ids)
+        for musician in musicians:
+            musician.points += points_to_add
+            musician.points_semester += points_to_add
+            musician.points_year += points_to_add
+            musician.save()
+
+            award = Award.objects.create(
+                type_award=typeAward,
+                description=classification,
+                points=points_to_add,      
+            )
+            musician.awards.add(award)
+
+
+    musiciansr = Musician.objects.filter(profile=request.user)
+
+    musicians_sorted = sorted(musiciansr, key=lambda musician: musician.points, reverse=True)
+
+    for position, musician in enumerate(musicians_sorted, start=1):
+        musician.current_position = position
+        musician.save()
+
+        if musician.best_position == 0 or musician.current_position < musician.best_position:
+            musician.best_position = musician.current_position
+            musician.save()
+
+    return Response({"message": "Points and Award added correctly."})
+
+
+@api_view(['POST'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def add_points_to_musicians(request):
+    musician_ids = request.data.get("musicianIds")
+    points_to_add = request.data.get("pointsToAdd")
+    classification = request.data.get("classification")
+
+    if musician_ids and points_to_add:
+        
+        musicians = Musician.objects.filter(id__in=musician_ids)
+        for musician in musicians:
+            musician.points += points_to_add
+            musician.points_semester += points_to_add
+            musician.points_year += points_to_add
+            musician.save()
+
+            award = Award.objects.create(
+                type_award=2,
+                description=classification,
+                points=points_to_add,    
+            )
+            musician.awards.add(award)
+
+    musicians = Musician.objects.filter(profile=request.user)
+
+    musicians_sorted = sorted(musicians, key=lambda musician: musician.points, reverse=True)
+
+    for position, musician in enumerate(musicians_sorted, start=1):
+        musician.current_position = position
+        musician.save()
+
+        if musician.best_position == 0 or musician.current_position < musician.best_position:
+            musician.best_position = musician.current_position
+            musician.save()
+
+    return Response({"message": "Points and Award added correctly."})
