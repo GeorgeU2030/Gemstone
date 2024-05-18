@@ -208,3 +208,13 @@ def get_song_by_id(request,song_id):
     song = Song.objects.filter(profile=request.user).get(id=song_id)
     serializer = SongSerializer(song)
     return Response(serializer.data)
+
+
+@api_view(['GET'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def get_songs_by_musician(request, musician_id):
+    musician = Musician.objects.filter(profile=request.user).get(id=musician_id)
+    songs = Song.objects.filter(profile=request.user,musicians=musician)
+    serializer = SongSerializer(songs, many=True)
+    return Response(serializer.data)
