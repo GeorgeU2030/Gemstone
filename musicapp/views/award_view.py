@@ -34,8 +34,8 @@ def awards_musician(request, musician_id):
         "october": musician.awards.filter(description="October").count(),
         "november": musician.awards.filter(description="November").count(),
         "december": musician.awards.filter(description="December").count(),
-        "sixmonth": musician.awards.filter(type_award=3).count(),
-        "year": musician.awards.filter(type_award=4).count(),
+        "sixmonth": musician.awards.filter(type_award__in=[3,4]).count(),
+        "year": musician.awards.filter(type_award=5).count(),
     }
 
     return Response(awards)

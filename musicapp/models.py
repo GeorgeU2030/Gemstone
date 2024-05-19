@@ -17,10 +17,12 @@ class Award(models.Model):
     description = models.TextField()
     # 1 - Song
     # 2 - Month
-    # 3 - Semester
-    # 4 - Year
+    # 3 - Semester 1
+    # 4 - Semester 2
+    # 5 - Year
     type_award = models.IntegerField(default=0)
     points = models.IntegerField(default=0)
+    year = models.IntegerField(default=0)
 
     def __str__(self):
         return f"{self.description}"
@@ -34,7 +36,7 @@ class Musician(models.Model):
     points = models.IntegerField(default=0)
     rating = models.FloatField(default=0)
     best_position = models.IntegerField(default=0)
-    current_position = models.IntegerField(default=0)
+    current_position = models.IntegerField(default=99999)
     start_date_best_position = models.DateField(null=True)
     end_date_best_position = models.DateField(null=True)
     points_year = models.IntegerField(default=0)
@@ -76,6 +78,7 @@ class Ranking(models.Model):
     period = models.CharField(max_length=50)
     points = models.IntegerField()
     musician = models.ForeignKey(Musician, on_delete=models.CASCADE)
+    profile = models.ForeignKey(User, on_delete=models.CASCADE)
 
     def __str__(self):
         return f"Ranking {self.period}"

@@ -14,16 +14,18 @@ class RankSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class RankingSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Ranking
-        fields = '__all__'
-
 
 class MusicianCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Musician
         fields = ('name', 'photo', 'flag', 'country', 'profile')
+
+
+class RankingSerializer(serializers.ModelSerializer):
+    musician = MusicianCreateSerializer()
+    class Meta:
+        model = Ranking
+        fields = '__all__'
 
 
 class MusicianAwardSerializer(serializers.ModelSerializer):

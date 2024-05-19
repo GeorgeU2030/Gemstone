@@ -169,7 +169,8 @@ def update_musicians(request):
             Ranking(
                 period="Semester 1 - " + str(year),
                 points=musician.points_semester,
-                musician=musician
+                musician=musician,
+                profile=request.user
             ).save()
 
         top_10_musicians_year = Musician.objects.filter(profile=request.user).order_by('-points_year')[:10]
@@ -179,7 +180,8 @@ def update_musicians(request):
             Ranking(
                 period="Period - " + str(year_before) + " - " + str(year),
                 points=musician.points_year,
-                musician=musician
+                musician=musician,
+                profile=request.user
             ).save()
 
         Musician.objects.filter(profile=request.user).update(points_semester=0)
@@ -193,7 +195,8 @@ def update_musicians(request):
             Ranking(
                 period="Semester 2 - " + str(year),
                 points=musician.points_semester,
-                musician=musician
+                musician=musician,
+                profile=request.user
             ).save()
 
         Musician.objects.filter(profile=request.user).update(points_semester=0)

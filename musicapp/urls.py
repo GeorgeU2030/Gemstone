@@ -27,5 +27,7 @@ urlpatterns = [
     path("add_points_week/", musician_view.add_points_week, name="add_points_week"),
     path("add_points_trophy/", musician_view.add_points_trophy, name="add_points_trophy"),
     path("add_points_to_musicians/", musician_view.add_points_to_musicians, name="add_points_to_musicians"),
-    
+    path("get_awards/", musician_view.get_awards_order, name="get_awards"),
+    path("ranking_by_history/<str:period_rank>", musician_view.rankings_by_history, name="ranking_by_history"),
+
 ]

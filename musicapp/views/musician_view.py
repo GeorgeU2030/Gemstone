@@ -1,6 +1,6 @@
 from rest_framework import viewsets
-from musicapp.serializers import MusicianSerializer, MusicianCreateSerializer, MusicianAwardSerializer
-from musicapp.models import Award, Musician
+from musicapp.serializers import AwardSerializer, MusicianSerializer, MusicianCreateSerializer, MusicianAwardSerializer, RankingSerializer
+from musicapp.models import Award, Musician, Ranking, Song
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
@@ -138,11 +138,18 @@ def add_points_trophy(request):
     musician_ids = request.data.get("musicianIds")
     points_to_add = request.data.get("pointsToAdd")
     classification = request.data.get("classification")
+    semesterid = request.data.get("semesterId")
+
+    last_song =  Song.objects.filter(profile=request.user).order_by('-id').first()
+    yearaward = last_song.start_date.year
 
     if points_to_add == 100:
-        typeAward = 3;
+        if semesterid == 1:
+            typeAward = 3;
+        elif semesterid == 2:
+            typeAward = 4;
     elif points_to_add == 200:
-        typeAward = 4;
+        typeAward = 5;
 
     if musician_ids and points_to_add:
         
@@ -156,7 +163,8 @@ def add_points_trophy(request):
             award = Award.objects.create(
                 type_award=typeAward,
                 description=classification,
-                points=points_to_add,      
+                points=points_to_add,
+                year=yearaward      
             )
             musician.awards.add(award)
 
@@ -184,6 +192,9 @@ def add_points_to_musicians(request):
     points_to_add = request.data.get("pointsToAdd")
     classification = request.data.get("classification")
 
+    last_song =  Song.objects.filter(profile=request.user).order_by('-id').first()
+    yearaward = last_song.start_date.year
+
     if musician_ids and points_to_add:
         
         musicians = Musician.objects.filter(id__in=musician_ids)
@@ -196,7 +207,8 @@ def add_points_to_musicians(request):
             award = Award.objects.create(
                 type_award=2,
                 description=classification,
-                points=points_to_add,    
+                points=points_to_add,
+                year=yearaward    
             )
             musician.awards.add(award)
 
@@ -213,3 +225,34 @@ def add_points_to_musicians(request):
             musician.save()
 
     return Response({"message": "Points and Award added correctly."})
+
+
+@api_view(['GET'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def get_awards_order(request):
+    musicians = Musician.objects.filter(profile=request.user)
+    awards = Award.objects.filter(musicians__in=musicians, type_award__in=[2, 3, 4]).order_by('id')
+    
+    response = []
+    for award in awards:
+        award_serializer = AwardSerializer(award)
+        response.append({
+            'musician_name': award.musicians.first().name,
+            'musician_photo': award.musicians.first().photo if award.musicians.first().photo else None,
+            'award': award_serializer.data
+        })
+
+    return Response(response)
+
+
+@api_view(['GET'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def rankings_by_history(request, period_rank):
+    rankings = Ranking.objects.filter(profile=request.user,period=period_rank).order_by('id','-points')[:10]
+    serializer = RankingSerializer(rankings, many=True)
+    return Response(serializer.data)
+    
+
+
