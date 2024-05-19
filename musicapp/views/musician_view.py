@@ -1,6 +1,6 @@
 from rest_framework import viewsets
 from musicapp.serializers import AwardSerializer, MusicianSerializer, MusicianCreateSerializer, MusicianAwardSerializer, RankingSerializer
-from musicapp.models import Award, Musician, Ranking, Song
+from musicapp.models import Award, Musician, Rank, Ranking, Song
 from rest_framework.decorators import api_view, permission_classes, authentication_classes
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
@@ -232,7 +232,7 @@ def add_points_to_musicians(request):
 @permission_classes([IsAuthenticated])
 def get_awards_order(request):
     musicians = Musician.objects.filter(profile=request.user)
-    awards = Award.objects.filter(musicians__in=musicians, type_award__in=[2, 3, 4]).order_by('id')
+    awards = Award.objects.filter(musicians__in=musicians, type_award__in=[2, 3, 4, 5]).order_by('id')
     
     response = []
     for award in awards:
@@ -253,6 +253,22 @@ def rankings_by_history(request, period_rank):
     rankings = Ranking.objects.filter(profile=request.user,period=period_rank).order_by('id','-points')[:10]
     serializer = RankingSerializer(rankings, many=True)
     return Response(serializer.data)
+
+
+@api_view(['GET'])
+@authentication_classes([TokenAuthentication])
+@permission_classes([IsAuthenticated])
+def history_ranking(request):
+    musicians_data = Musician.objects.filter(profile=request.user).order_by('current_position').values()
+
+    for musician in musicians_data:
+        ranks = Rank.objects.filter(musician_id=musician['id']).order_by('-week').values('week', 'position')[:10]
+        musician['ranks'] = {rank['week']: rank['position'] for rank in ranks}
+
+    latest_song = Song.objects.latest('id')
+    max_week = latest_song.week
+
+    return Response({'musiciansData': list(musicians_data), 'maxWeek': max_week})
     
 
 

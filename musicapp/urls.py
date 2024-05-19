@@ -29,5 +29,5 @@ urlpatterns = [
     path("add_points_to_musicians/", musician_view.add_points_to_musicians, name="add_points_to_musicians"),
     path("get_awards/", musician_view.get_awards_order, name="get_awards"),
     path("ranking_by_history/<str:period_rank>", musician_view.rankings_by_history, name="ranking_by_history"),
-
+    path("history_ranking/", musician_view.history_ranking, name="history_ranking"),
 ]
