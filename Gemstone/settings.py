@@ -29,7 +29,7 @@ SECRET_KEY = "django-insecure-s9$ak2yiga)^qrcjhf*j-if6+=)k73t10(zeth=&5_&8bl2ilo
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["gemstone-s6fh.onrender.com"]
 
 # Application definition
 
