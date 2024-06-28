@@ -155,7 +155,7 @@ def update_musicians(request):
             musician=musician
         )
 
-        if musician.best_position == 0 or musician.current_position < musician.best_position:
+        if musician.best_position == 0 or musician.current_position <= musician.best_position:
             musician.best_position = musician.current_position
             musician.start_date_best_position = start_date_str
             musician.end_date_best_position = end_date_str
