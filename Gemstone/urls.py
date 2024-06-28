@@ -25,3 +25,4 @@ urlpatterns = [
     re_path("signup", views.signup),
     path("music/", include("musicapp.urls"))
 ]
+
